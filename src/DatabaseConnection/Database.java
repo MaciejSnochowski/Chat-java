@@ -79,13 +79,7 @@ public class Database implements Communication {
             statement.executeBatch();
 
             ResultSet resultSet= statement.executeQuery("SELECT * FROM pytania");
-            while (resultSet.next()){
-                System.out.println("\n"+resultSet.getString(2) + "\n"
-                        + resultSet.getString(3)
-                        + "\n"
-                        + resultSet.getString(4));
 
-            }
 
 
             connection.commit();
@@ -104,8 +98,9 @@ public class Database implements Communication {
 
 
     @Override
-    public String  getQuestions() throws SQLException {
-        String questions="";
+    public String  getQuestion(int number) throws SQLException {
+        int counter=0;
+        String []questions=new String[arrayOfQuestions.length];
         Connection connection = DriverManager.getConnection(DB_URL + "kolokwium", USERNAME, PASSSWORD);
         DatabaseMetaData dbm= connection.getMetaData();
         Statement  statement = connection.createStatement();
@@ -116,12 +111,32 @@ public class Database implements Communication {
 
         ResultSet resultSet= statement.executeQuery("SELECT * FROM pytania");
         while (resultSet.next()){
-            questions="\n"+resultSet.getString(2) + "\n"
-                    + resultSet.getString(3);
+            questions[counter++]=resultSet.getString(2);
+
 
         }
 
-        return questions;
+        return questions[number];
+    }
+
+    @Override
+    public String getAnswer(int number) throws SQLException {
+        int counter=0;
+        String []answer=new String[arrayOfQuestions.length];
+        Connection connection = DriverManager.getConnection(DB_URL + "kolokwium", USERNAME, PASSSWORD);
+        DatabaseMetaData dbm= connection.getMetaData();
+        Statement  statement = connection.createStatement();
+        ResultSet tables = dbm.getTables(null, null, "pytania", null);
+        if (!tables.next()) {
+            System.out.println("THERES NO TABLE IN DB");
+        }
+        ResultSet resultSet= statement.executeQuery("SELECT * FROM pytania");
+        while (resultSet.next()){
+            answer[counter++]= resultSet.getString(3);
+
+
+        }
+        return answer[counter];
     }
 
     @Override
